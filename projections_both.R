@@ -1,4 +1,6 @@
 #Cohort Component Model of Projections (female dominant perspective, both sexes and closed population), by JE Romero-Prieto, PhD#
+#https://github.com/Romero-Prieto/teaching#
+
 rm(list = ls()) #Clear all generated data if any.#
 #install.packages("readxl")#
 #install.packages("stringr")#

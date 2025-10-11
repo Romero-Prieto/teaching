@@ -41,71 +41,33 @@ ex[x == 10]                                                                     
 # A. Determine the following quantities: #
 # 1. The life expectancy at birth? #
 # R Hint: Select form the vector if life expectancy the age that is reflecting the conditions at birth. #   
-ex[x == 0]
 
 # 2. The life expectancy at age 40? #
 # R Hint: Select form the vector if life expectancy the age that is reflecting prospective mortality conditions at age 40. #
-ex[x == 40]
 
 # 3. The probability of dying in infancy? #
 # R Hint: If infancy is defined as the firs year of life, select the probability of dying below the age 1. #
-nqx[x == 0]
 
 # 4. The number alive (in the life table) at exact age 50? #
 # R Hint: lx represent an attrition process, resulting from a given number of births (the radix). You can return the value of that function at age 50. # 
-lx[x == 50]
 
 # 5. The number of (life table) deaths between exact ages 5 and 10? #
 # R Hint (the formal): There are two approaches to quantifying deaths within aggregated age intervals: (i) summing the number of deaths across the relevant age intervals; and (ii) differentiating the function lx at the boundaries of the aggregated age interval. #    
-sum(ndx[x >= 5 & x < 10])
-lx[x == 5] - lx[x == 10]
 
 # R Hint (the heuristic): This is a 5-year age interval and we are dealing with an abridged life table of 5-year age intervals (except for the first five years of life). There is only one value in this life table satisfying the age interval 5 to 10, i.e., 5d5.
-ndx[x == 5]
 
 # 6. The probability of surviving between exact ages 60 and 65? #
 # R Hint (the formal): Use the function lx to calculate a conditional probability. The size of the cohort celebrating their 65th birthday divided by the size of the cohort who celebrated their 60th birthday, five years earlier.  
-lx[x == 65]/lx[x == 60]
-
 # R Hint (the heuristic): Considering the age intervals, there is only one value in this life table satisfying this condition, i.e., 5p60. #  
-npx[x == 60]
 
 # 7. The number of years lived between exact ages 1 and 5? #
 # R Hint: You can sum the number of person-years between exact ages 1 and 5, and then divide by the radix of the life table as you only would have one person. #
-sum(nLx[x >= 1 & x < 5])/radix                                                  #... either Adding up nLx.#
-sum(Tx[x == 1] - Tx[x == 5])/radix                                              #or decumulating Tx.#
 
 # 8. The total number of person-years lived in this life table? #
 # R Hint: Function Tx quantifies that. Adding up nLx across all ages could be an alternative solution. # 
-Tx[x == 0]
   
 # B. Plot nqx, ndx, lx and ex against age. Note that some of these quantities pertain to an age group, others to an exact age. Your plots need to reflect that. #
 # R Hint: While quantities at exact ages can be plotted at a given value of x, quantities representing age intervals should be plotted at the midpoint of the interval, i.e., x + n/2. The only exception is the open-ended age interval, which should be plotted at x + eₓ.
-LT[,"x + n/2"]       = x + n/2                                                  #Generates a variable "x + n/2", indicating the mid-point of the age interval.#
-LT[!sEL,"x + n/2"]   = x[!sEL] + ex[!sEL]                                       #As a convention, the expected or average length of the age interval is defined the age x, plus the life expectancy at age x.#
-Y                    = list("nqx","ndx","lx","ex")                              #Defines a list of functions to be plotted.#
-X                    = list("x + n/2","x + n/2","x","x")                        #Accounts for the difference in the x-axis when each function is plotted.#
-t                    = list("probabilities of dying",
-                            "number of deaths",
-                            "number of survivors",
-                            "life expectancy")                                  #Generates a list of titles for each function.#
-Fi                   = list()                                                   #Defines "Fi" as a list of figures as we are using one figure per function to be plotted.#
-for (i in 1:length(X)) {                                                        #To repeat the same set of commands per function to be plotted, making the code shorter and consitent.#
-  Fi[[i]] <- local({                                                            #Adjudicates to a "local()" all information of the ith plot that will be located at Fi. This notation is just to prevent overwriting values every time a new function is plotted.#
-    x  = LT[,X[[i]]]                                                            #Extracts from a life table the values of a function to be plotted.#
-    y  = LT[,Y[[i]]]                                                            #Idem.#
-    fi = data.frame(x,y)                                                        #Creates a data frame with the relevant information for the ith plot.#
-    
-    ggplot(data = fi,aes(x = x, y = y)) +
-      geom_point() +
-      geom_line() +
-      labs(title = t[[i]], x = "age", y = Y[[i]]) +
-      theme(plot.title = element_text(size = 8),
-            axis.title = element_text(size = 8),
-            axis.text = element_text(size = 6))                                 #Plots each function.#
-    })
-}
-grid.arrange(Fi[[1]],Fi[[2]],Fi[[3]],Fi[[4]], nrow = 2)                         #Compiles all plots into one figure.#
 
 # C. What is the probability of dying in the open-ended age interval? Explain your answer. #
 # R hint: sEL selects all ages but the open-ended age interval. !sEL negates the statement sEL and returns just the open-ended age interval. You can use !sEL to select the probability of dying in the open ended-age interval.

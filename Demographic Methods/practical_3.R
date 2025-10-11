@@ -71,4 +71,3 @@ ex[x == 10]                                                                     
 
 # C. What is the probability of dying in the open-ended age interval? Explain your answer. #
 # R hint: sEL selects all ages but the open-ended age interval. !sEL negates the statement sEL and returns just the open-ended age interval. You can use !sEL to select the probability of dying in the open ended-age interval.
-nqx[!sEL]

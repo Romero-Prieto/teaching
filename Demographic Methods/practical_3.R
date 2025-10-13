@@ -46,7 +46,7 @@ ex[x == 10]                                                                     
 # R Hint: Select form the vector if life expectancy the age that is reflecting prospective mortality conditions at age 40. #
 
 # 3. The probability of dying in infancy? #
-# R Hint: If infancy is defined as the firs year of life, select the probability of dying below the age 1. #
+# R Hint: If infancy is defined as the firs year of life, select the probability of dying below age 1. #
 
 # 4. The number alive (in the life table) at exact age 50? #
 # R Hint: lx represent an attrition process, resulting from a given number of births (the radix). You can return the value of that function at age 50. # 

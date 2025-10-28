@@ -10,22 +10,22 @@ pATh                 = "~/Documents/Demographic_Methods/Practical_5/"           
 username             = ""
 password             = ""
 country              = "USA"
-B                    = readHFDweb(country, "birthsRR", username, password)
-B                    = as.data.frame(B[, c("Year","Age","Total")])
-colnames(B)          = c("Year", "x", "B")
-nNx                  = readHFDweb(country, "exposRR", username, password)
-nNx                  = as.data.frame(nNx[,c("Year", "Age", "Exposure")])
-colnames(nNx)        = c("Year", "x", "nNx_f")
-HFD                  = B
+HFD                  = readHFDweb(country, "birthsRR", username, password)
+HFD                  = as.data.frame(HFD[, c("Year","Age","Total")])
+colnames(HFD)        = c("Year", "x", "B")
+
 
 nLx                  = readHMDweb(country, "fltper_1x1", username, password)
 nLx                  = as.data.frame(nLx[,c("Year", "Age", "Lx")])
 colnames(nLx)        = c("Year", "x", "nLx")
 nNx                  = readHMDweb(country, "Exposures_1x1", username, password)
-nNx                  = as.data.frame(nNx[,c("Year", "Age", "Female")])
-colnames(nNx)        = c("Year", "x", "nNx")
+nNx                  = as.data.frame(nNx[,c("Year", "Age", "Female", "Total")])
+colnames(nNx)        = c("Year", "x", "nWx", "nNx_total")
+
 HMD                  = merge(nNx, nLx, by = c("Year", "x"), all = TRUE)
 data                 = merge(HMD, HFD, by = c("Year", "x"), all = TRUE)
 fertility            = as.matrix(data)
-rm(data, HFD, HMD, nNx, B, nLx, username, password)
+sEL                  = is.na(fertility)
+fertility[sEL]       = 0
+rm(data, HFD, HMD, nNx, nLx, sEL, username, password)
 write.csv(fertility, file = paste0(pATh,"practical_5.csv"), row.names = FALSE)

@@ -1,0 +1,205 @@
+---
+title: "Demographic Methods - Practical 3 (Life Tables I)"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: null
+  latex_engine: xelatex
+  includes:
+    in_header: preamble.tex
+  keep_tex: true
+  toc: true
+  number_sections: true
+  fig_caption: true
+  geometry: letterpaper, top=0.0cm, bottom=0.0cm, left=0.0cm, right=0.0cm
+  html_document:
+    df_print: paged
+---
+
+## The heading of the R script
+The R Script starts by clearing all generated data if any and installing and loading required packages (in this example, lines are commented out using hashtags to prevent execution).
+```{r}
+rm(list = ls())                                                                 
+#install.packages("stringr")
+#install.packages("ggplot2")
+#install.packages("tidyverse")
+#install.packages("gridExtra")
+#library(stringr)
+#library(ggplot2)
+#library(tidyverse)
+#library(gridExtra)
+```
+
+## Reading the data
+The R function "c()" combines values into a vector or list. We can use this function to define the age-specific mortality rates $_nM_x$, where $x$ represents the beginning of the age interval, for an unspecified West African population in 1975. The following command lines could be added to the R script.
+```{r}
+x                    = c(0,1,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75)
+nMx                  = c(0.22650,0.03430,0.00198,0.00038,0.00180,0.00252,
+                         0.00290,0.00318,0.00352,0.00390,0.00454,0.00490,
+                         0.00622,0.00998,0.02066,0.06748,0.31780)
+```
+
+## Identifying the length of the age intervals $n$
+In R, the function "diff(x,n)" returns the $n^{th}$ difference of $x$. The first difference of ages $x$ is the length of the age intervals $n$. The length of the open-ended age interval is undetermined and marked as "NA". A single additional line, like the one shown below, is sufficient to complete this task.
+```{r}
+n                    = c(diff(x,1),NA)
+```
+
+## Incorporating assumptions about the distribution of deaths within the age interval, using the function $_na_x$
+Depending on the source, $_na_x$ may represent either a number of years less than $n$ or, alternatively, a fraction of $n$. Both interpretations are valid, but the chosen definition has implications for the equations used in life table calculations. In this module, $_na_x$ is assumed to be half the length of the age interval, except for individuals dying in the first two age intervals. For infant deaths, a value of 0.3 is assumed in contexts of high infant mortality, and 0.1 in contexts of low mortality. In the 1–4 age interval, child deaths are assumed to contribute 0.4 times the length of $n$. These are coarse assumptions, however, and more precise estimates—as well as a detailed discussion—can be found in: Romero-Prieto, Verhulst, and Guillot (2024). Estimating 1a0 and 4a1 in a life table: A model approach based on newly collected data, *Demography*, 61(3), 643–664. https://doi.org/10.1215/00703370-11330227.
+```{r}
+nax                  = c(0.3,0.4,rep(0.5, length(nMx) - 3),NA)
+```
+Note that when defined as a proportion, $_na_x$ is undetermined in the open-ended age interval and marked as "NA".
+
+## Identifying the open-ended age interval
+In R, "!" is used to negate a function or a statement, and "is.na()" returns a selection of NA values. Therefore, "!is.na(n)" returns a selection of age intervals that are not undetermined, as shown by the following line.
+```{r}
+sEL                  = !is.na(n)
+```
+"F[sEL]" returns the subset of elements in any vector or list F that satisfy the condition sEL, while "F[!sEL]" returns those that do not satisfy sEL. The condition sEL is useful for identifying the open-ended age interval, **which requires additional assumptions**.
+
+## Estimating (conditional) probabilities of dying $_nq_x$
+Conditional probabilities of dying are estimated from $_nM_x$ and $_na_x$. Different values of $_na_x$ lead to slightly different estimates of $_nq_x$. The following line shows how to estimate $_nq_x$ for all age intervals except the open-ended one, which is treated separately.
+```{r}
+nqx                  = n[sEL]*nMx[sEL]/(1 + n[sEL]*(1 - nax[sEL])*nMx[sEL])
+```
+For the open-ended age interval, it is simply assumed that everyone dies, i.e., a *memento mori* condition to close a life table. Hence, the following line completes the estimation of ${_\infty}q_x$.
+```{r}
+nqx[!sEL]            = 1
+```
+## Calculating probabilities of surviving $_np_x$
+Surviving is the opposite event of dying, hence surviving probabilities are calculated as the complement of the conditional probabilities of dying, i.e., $_np_x = 1 - _nq_x$, adding the following line to the R script.
+```{r}
+npx                  = 1 - nqx                                                  
+```
+
+## Defining the radix of a life table and calculating the number of survivors at exact ages $l_x$
+The radix of a life table is used to scale the number of survivors at birth, but could be any (positive) number. The choice of radix does not affect probabilities or the life expectancy, but determines the number of survivors $l_x$, the number of deaths $_nd_x$, the number of person-years at each age interval $_nL_x$, and the number of person-years lived above age $x$, denoted by $T_x$.
+```{r}
+radix                = 100000
+```
+The number of survivors at an exact age $l_x$, is then calculated from the cumulative product of $_np_x$, starting from the radix. The following line complete these calculations at all ages, using the R function "cumprod()".
+```{r}
+lx                   = cumprod(c(1,npx[sEL]))*radix
+```
+If the radix is unitary, i.e., $l_0 = 1$, then $l_x$ becomes a probability, and $_nL_x$ and $T_x$ quantify years rather than person-years as there is only one person.
+
+## Calculating the number of deaths in each age interval $_nd_x$
+The number of deaths in each age interval is calculated as the product of the number of survivors at the beginning of the age interval and the conditional probability of dying in that interval.
+```{r}
+ndx                  = lx*nqx
+```
+One alternative way of calculating $_nd_x$ is as the difference between the number of survivors at the beginning and at the end of the age interval, i.e., $_nd_x = l_x - l_{x+n}$. This alternative can be implemented in R using the negative of the function "diff()", used before. This alternative calculation produces identical results, except for the open-ended age interval, which is missed as a result of taking the first difference of a vector. Hence, the use of the alternative calculation requires an additional line to complete the calculation of ${_\infty}d_x$ in the open-ended age interval, as shown below.
+```{r}
+ndx[sEL]             = -diff(lx,1)
+ndx[!sEL]            = lx[!sEL]
+```
+The additional line makes explicit the *memento mori* condition, that everyone dies in the open-ended age interval.
+
+## Calculating the number of person-years lived in the age interval $_nL_x$
+The number of person-years lived in the age interval is calculated as the sum of two components: (i) those who survive to the age interval contribute the length of the age interval, i.e., $n*(l_x - _nd_x)$; and (ii) those who die in the age interval contribute a fraction $_na_x$ of the length of the age interval, i.e., $n*_na_x*_nd_x$. Therefore, $_nL_x$ is calculated adding the following line to the R script.
+```{r}
+nLx                  = n*(lx - ndx) + n*nax*ndx
+```
+For the open-ended age interval, it is assumed that those who die in that interval live, on average, their life expectancy which is the reciprocal of the age-specific mortality rate, i.e., $1/{_\infty}M_x$. This assumption is implemented by adding the following line to the R script.
+```{r}
+nLx[!sEL]            = ndx[!sEL]/nMx[!sEL]
+```
+Indeed, the open-ended interval should satisfy the following closure conditions: $l_x = {_\infty}d_x$, $T_x = {_\infty}L_x$, and the resulting $e_x = 1/{_\infty}M_x$.
+
+## Calculating the number of person-years lived above age $x$, denoted by $T_x$
+The number of person-years lived above age $x$ is calculated as the sum of $_nL_x$ from age $x$ to the open-ended age interval. In the practice, this is an inverse cumulative sum—from the $n^{th}$ element to the last, that can be implemented in R using the function "cumsum()" with some fixings, as described in the following command line that could be added to the R script.
+```{r}
+Tx                   = sum(nLx) - (cumsum(nLx) - nLx)
+```
+An alternative way of calculating $T_x$ is by first reversing the order of $_nL_x$ using the R function "rev()", then calculating the cumulative sum of the reversed vector, and finally reversing the order of the resulting vector. This alternative calculation can be implemented in R as follow: 
+```{r}
+Tx                   = rev(cumsum(rev(nLx)))
+```
+## Calculating the life expectancy at age $x$, denoted by $e_x$
+The life expectancy at age $x$ is calculated as the ratio of $T_x$ to $l_x$. This is the total number person-years lived above age $x$, divided by the number of people surviving to that age. Hence, it represents an expected value and is measured in years.
+```{r}
+ex                   = Tx/lx
+```
+
+## Consolidating all functions of a life table and extracting results
+All functions of a life table can be consolidated in a single table using the R function "data.frame()", as described by the following command line.
+```{r}
+LT                   = data.frame(x, n, nMx, nax, nqx, npx, lx, ndx, nLx, Tx, ex)
+```
+
+The following line could be used to print the full life table, as shown:
+```{r}
+print(LT)
+```
+
+The following line could be used to print only the age and the life expectancy of the life table, as shown:
+```{r}
+print(LT[,c("x","ex")])
+```
+
+The following line can be used to print the number of person-years lived in the interval [25, 30), using $_nL_x$ as input of the R function "sprint("format", number)" displaying all digits and one decimal point, as shown:
+```{r}
+sprintf("%.1f",nLx[x == 25])
+```
+
+As a final example, the following line could be used to extract the life expectancy at age 10 with two decimal points from $e_x$, as shown:
+```{r}
+sprintf("%.2f",ex[x == 10])
+```
+
+
+# Exercise 1
+## Part A. Determine the following quantities:
+**1. The life expectancy at birth?**
+Hint: Select from the vector $e_x$ the age 0. 
+
+**2. The life expectancy at age 40?**
+
+**3. The probability of dying in infancy?**
+Hint: If infancy is defined as the firs year of life, select the probability of dying below age 1.
+
+**4. The number alive (in the life table) at exact age 50?**
+Hint: Return the value the $l_x$ function at age 50.
+
+**5. The number of (life table) deaths between exact ages 5 and 10?**
+Hint: There are two approaches: (i) summing the number of deaths across the relevant age intervals; and (ii) differentiating the function $l_x$ at the exact ages involved.
+Also note that this is a 5-year age interval and we are working with an abridged life table of 5-year age intervals (except for the first five years of life). There is only one value in this life table corresponding to the age interval 5 to 10, i.e., $_5d_5$.
+
+**6. The probability of surviving between exact ages 60 and 65?**
+Hint: Report the size of the cohort celebrating their $65^{th}$ birthday divided by the size of the cohort who celebrated their $60^{th}$ birthday, five years earlier.
+
+**7. The number of years that a newborn is expected to live between exact ages 1 and 5?**
+Hint: You can sum the number of person-years between exact ages 1 and 5, and then divide by the radix of the life table.
+
+**8. The total number of person-years lived in this life table?**
+Hint: Function $T_x$ quantifies that. Adding up $_nL_x$ across all ages could be an alternative solution.
+
+## Part B. Plot $_nq_x$, $_nd_x$, $l_x$ and $e_x$ against age. Note that some of these quantities pertain to an age group, others to an exact age. Your plots need to reflect that.
+Hint: While quantities at exact ages can be plotted at a given value of $x$, quantities representing age intervals should be plotted at the midpoint of the interval, i.e., $x + n/2$. The only exception is the open-ended age interval, which should be plotted at $x + e_x$.
+
+## Part C. What is the probability of dying in the open-ended age interval? Explain your answer.
+Hint: sEL selects all ages but the open-ended age interval. !sEL negates the statement sEL and returns just the open-ended age interval. You can use !sEL to select the probability of dying in the open ended-age interval.
+
+# Exercise 2  (Optional)
+## The life table below is for a high-income country in the 1960s. Fill in the blanks (NA) and interpret the values that you’ve calculated.
+The data for this exercise are extracted from a GitHub repository, using the following command lines.
+```{r}
+rm(list = ls())
+GitHub               = "https://raw.githubusercontent.com/Romero-Prieto/teaching/main/Demographic%20Methods/practical_3.csv"
+LT                   = read.csv(GitHub)                   #To pull the data from a GitHub repository.# 
+print(LT)                                                 #To print data.#
+```
+**1. $_5q_{60}$** 
+
+**2. $l_{50}$**
+
+**3. $_5d_{35}$**
+
+**4. $_5L_{55}$**
+
+**5. $T_0$**
+
+**6. $T_{20}$**
+
+**7. $e_{30}$**

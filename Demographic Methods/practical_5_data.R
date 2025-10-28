@@ -7,8 +7,8 @@ library(HMDHFDplus) #Uses a library to pull data from the Human Fertility Databa
 # Reading the data
 pATh                 = "~/Documents/Demographic_Methods/Practical_5/"           #To define the path.#
 
-username             = "julio.romero-prieto@lshtm.ac.uk"
-password             = "juznan-Racmox-8nohvi"
+username             = ""
+password             = ""
 country              = "USA"
 B                    = readHFDweb(country, "birthsRR", username, password)
 B                    = as.data.frame(B[, c("Year","Age","Total")])

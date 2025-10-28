@@ -1,4 +1,4 @@
-#Demographic Methods - Practical 4 (Life Tables II), by JE Romero-Prieto, PhD#
+#Demographic Methods - Practical 5 (Fertility and Reproduction), by JE Romero-Prieto, PhD#
 #https://github.com/Romero-Prieto/teaching#
 rm(list = ls())
 #install.packages("HMDHFDplus")

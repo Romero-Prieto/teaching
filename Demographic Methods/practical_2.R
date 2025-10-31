@@ -8,8 +8,6 @@ library(ggplot2)                                                                
 
 # Reading a preparing data #
 pATh                 = "~/Documents/Demographic_Methods/Practical_2/"           #To define the path.#
-data                 = read.csv(paste0(pATh,"practical_2.csv"))                 #Imports data from a csv file. The function paste0( , , , ) concatenates as many strings as specified, without any spaces in between.#
-
 GitHub               = "https://raw.githubusercontent.com/Romero-Prieto/teaching/main/Demographic%20Methods/practical_2.csv"
 data                 = read.csv(GitHub)                                         #To pull the data from a GitHub repository.# 
 print(data)                                                                     #To print data.#

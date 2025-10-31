@@ -3,14 +3,13 @@
 
 #1. Heading of the program: installing/loading packages or libraries and reading the input data.#
 rm(list = ls())                                                                 #Clearing all generated data if any.#
-#install.packages("readxl")#                                                    #Packages should be installed only once. Hashtags can be used to add comments or to deactivate lines.#
-#install.packages("stringr")#
+#install.packages("stringr")#                                                   #Packages should be installed only once. Hashtags can be used to add comments or to deactivate lines.#
 #install.packages("ggplot2")#
-library(readxl)                                                                 #To read excel data.#
 library(stringr)                                                                #To work with strings (i.e., any character, including letters, numbers, and symbols).#
 library(ggplot2)                                                                #To draw plots.#
 pathfile             = "~/Documents/Demographic_Methods/Practical_1/"           #To define the path.#
-input                = read_excel(paste0(pathfile,"France_1967.xlsx"),"Sheet1") #Imports data from an excel file. The function paste0( , , , ) concatenates as many strings as specified, without any spaces in between.#
+GitHub               = "https://raw.githubusercontent.com/Romero-Prieto/teaching/main/Demographic%20Methods/practical_1.csv"
+input                = read.csv(GitHub)                                         #To pull the data from a GitHub repository.# 
 
 #2. Some data preparation.#
 input                = as.matrix(input)                                         #Reads the data as a matrix, which is convenient for data manipulation.#
@@ -62,4 +61,3 @@ sum(input[input[,"Age"] == 0,"Male"])/sum(input[input[,"Age"] == 0,"Female"])
 
 # Every single age between 0 and 100+ #
 cumsum(input[,"Male"])/cumsum(input[,"Female"])
-

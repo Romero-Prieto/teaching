@@ -1,15 +1,17 @@
 #Demographic Methods - Practical 2 (Mortality and Standardisation), by JE Romero-Prieto, PhD#
 #https://github.com/Romero-Prieto/teaching#
 rm(list = ls())                                                                 #Clearing all generated data if any.#
-#install.packages("readxl")#                                                    #Packages should be installed only once. Hashtags can be used to add comments or to deactivate lines.#
-#install.packages("stringr")#
-#install.packages("ggplot2")#
+#install.packages("stringr")#                                                   #Packages should be installed only once. Hashtags can be used to add comments or to deactivate lines.#
+#install.packages("ggplot2")#                                                   
 library(stringr)                                                                #To work with strings (i.e., any character, including letters, numbers, and symbols).#
 library(ggplot2)                                                                #To draw plots.#
 
 # Reading a preparing data #
 pATh                 = "~/Documents/Demographic_Methods/Practical_2/"           #To define the path.#
 data                 = read.csv(paste0(pATh,"practical_2.csv"))                 #Imports data from a csv file. The function paste0( , , , ) concatenates as many strings as specified, without any spaces in between.#
+
+GitHub               = "https://raw.githubusercontent.com/Romero-Prieto/teaching/main/Demographic%20Methods/practical_2.csv"
+data                 = read.csv(GitHub)                                         #To pull the data from a GitHub repository.# 
 print(data)                                                                     #To print data.#
 
 lISt                 = c("Sweden","Kazakhstan")                                 #To define a list of all countries to be analysed.#

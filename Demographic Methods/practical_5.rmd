@@ -37,7 +37,7 @@ Fertility and reproduction calculations focus on the year 2001, though any year 
 ```{r}
 year                 = 2001
 radix                = 100000
-data                 = subset(data, "Year" == year)
+data                 = data[data[, "Year"]== year, ]
 x                    = data[, "x"]
 nWx                  = data[, "nWx"]
 nNx_t                = data[, "nNx_total"]

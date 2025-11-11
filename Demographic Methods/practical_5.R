@@ -12,7 +12,7 @@ print(data[1:20, ])                                                             
 # Data preparation
 year                 = 2001
 radix                = 100000
-data                 = subset(data, "Year" == year)                             #Selects year 2001.
+data                 = data[data[, "Year"]== year, ]                            #Selects year 2001.
 x                    = data[, "x"]
 nWx                  = data[, "nWx"]
 nNx_t                = data[, "nNx_total"]

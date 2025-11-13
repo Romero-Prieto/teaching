@@ -12,7 +12,7 @@ GitHub               = "https://raw.githubusercontent.com/Romero-Prieto/teaching
 data                 = read.csv(GitHub)                                         #Reads age-period-cohort estimates of exposure PY, and the corresponding number of births B. Sweden female population from 1891 to 2024.
 data                 = as.data.table(data)                                      #Defines data as a table, which is convenient for data analysis and preparation.
 setorder(data, "Year", "x")                                                     #Sorts data by year and age (in that order).
-print(data[10:15, ])                                                            #Shows 5 selected rows of the data.
+print(data[10:14, ])                                                            #Shows 5 selected rows of the data.
 
 # Some syntax for data preparation 
 subset               = data[["Cohort"]]                                         #Selects all elements of the "Cohort" column in the "data" table.

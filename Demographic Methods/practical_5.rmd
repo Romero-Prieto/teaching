@@ -51,7 +51,7 @@ n                    = c(diff(x,1),NA)
 sEL                  = !is.na(n)
 rEP                  = x >= 15 & x < 50
 ```
-## Examples
+## Example questions
 Data could be used to calculate the life expectancy at birth $e_0$, using all values of $_nL_x$ and the radix.  
 $e_0 = \frac{\sum_{a=0}^{\infty}{_nL_a}}{l_0}$
 ```{r}

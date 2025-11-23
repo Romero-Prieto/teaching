@@ -1,4 +1,4 @@
-x,population,within_counties,within_states,between_states,lx,nax
+﻿x,population,within_counties,within_states,between_states,lx,nax
 0,NA,NA,NA,NA,100000,0.12903
 1,"15,504","1,168",408,267,99460.6,0.41357
 5,"20,194","1,015",375,269,99377.3,0.46679
@@ -19,4 +19,4 @@ x,population,within_counties,within_states,between_states,lx,nax
 70,"14,878",198,77,87,74465.9,0.52451
 75,"10,172",162,38,23,65564.9,0.52443
 80,"6,632",68,26,32,53346,0.51624
-85,"5,992",95,36,37,37700.2,
+85,"5,992",95,36,37,37700.2,NA
